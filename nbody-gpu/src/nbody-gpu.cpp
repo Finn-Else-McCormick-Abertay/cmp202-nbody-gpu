@@ -1,5 +1,6 @@
 #include <sycl/sycl.hpp>
-#include <iostream>
+
+#include <Window/Application.h>
 
 using namespace sycl;
 
@@ -16,7 +17,7 @@ static auto exception_handler = [](sycl::exception_list e_list) {
 };
 
 int main(int argc, char* argv[]) {
-
+	/*
 	auto selector = default_selector_v;
 
 	try {
@@ -27,6 +28,10 @@ int main(int argc, char* argv[]) {
 	} catch (exception const &e) {
 		std::terminate();
 	}
+	*/
+
+	Application::Init();
+	Application::Enter();
 
 	return 0;
 }
