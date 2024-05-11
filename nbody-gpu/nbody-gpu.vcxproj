@@ -14,12 +14,12 @@
     <ClCompile Include="src\nbody-gpu.cpp" />
     <ClCompile Include="src\Window\Console.cpp" />
     <ClCompile Include="src\Window\Application.cpp" />
-    <ClCompile Include="src\Window\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Simulation\Rendering.h" />
+    <ClInclude Include="src\Simulation\SimulationWorld.h" />
     <ClInclude Include="src\Window\Console.h" />
     <ClInclude Include="src\Window\Application.h" />
-    <ClInclude Include="src\Window\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1aec6315-2f89-4145-b180-94a43e2eb6ea}</ProjectGuid>

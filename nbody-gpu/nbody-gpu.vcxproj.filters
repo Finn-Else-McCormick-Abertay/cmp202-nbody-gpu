@@ -24,9 +24,6 @@
     <ClCompile Include="src\Window\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window\Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Window\Application.h">
@@ -35,7 +32,10 @@
     <ClInclude Include="src\Window\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Window\Window.h">
+    <ClInclude Include="src\Simulation\Rendering.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Simulation\SimulationWorld.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

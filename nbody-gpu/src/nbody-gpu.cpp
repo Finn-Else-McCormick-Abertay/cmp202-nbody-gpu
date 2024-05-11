@@ -1,4 +1,5 @@
 #include <sycl/sycl.hpp>
+#include <iostream>
 
 #include <Window/Application.h>
 
@@ -18,14 +19,15 @@ static auto exception_handler = [](sycl::exception_list e_list) {
 
 int main(int argc, char* argv[]) {
 	/*
-	auto selector = default_selector_v;
+	device device;
 
 	try {
-		queue q(selector, exception_handler);
+		queue q(device, exception_handler);
 
 		// Print out the device information used for the kernel code.
 		std::cout << "Running on device: " << q.get_device().get_info<info::device::name>() << "\n";
 	} catch (exception const &e) {
+		std::cout << e.what() << std::endl;
 		std::terminate();
 	}
 	*/
