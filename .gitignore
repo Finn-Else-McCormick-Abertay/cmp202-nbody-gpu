@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 #vcpkg
 vcpkg_installed/
+
+imgui.ini

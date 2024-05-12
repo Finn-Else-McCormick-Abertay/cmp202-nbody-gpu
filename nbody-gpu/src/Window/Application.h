@@ -6,6 +6,9 @@
 #include <imgui.h>
 
 #include "Console.h"
+#include <Simulation/SimulationWorld.h>
+#include <Rendering/CameraController.h>
+#include <Rendering/DrawQueue.h>
 
 class Application
 {
@@ -17,13 +20,8 @@ public:
 
 	Console& Output();
 
-	static void __windowContentScaleCallback(GLFWwindow*, float xScale, float yScale);
-	static void __framebufferSizeCallback(GLFWwindow*, int width, int height);
-	static void __windowSizeCallback(GLFWwindow*, int width, int height);
-	static void __windowRefreshCallback(GLFWwindow*);
-	static void __windowMaximizeCallback(GLFWwindow*, int maximized);
-	static void __windowFocusCallback(GLFWwindow*, int focused);
-	static void __windowCloseCallback(GLFWwindow*);
+	static SimulationWorld* World();
+	static void SetWorld(std::unique_ptr<SimulationWorld>&&);
 
 private:
 	Application();
@@ -32,8 +30,24 @@ private:
 
 	static Application& Singleton();
 
+	Console m_console;
+
 	GLFWwindow* p_window = nullptr;
 	ImGuiContext* p_imguiContext = nullptr;
 
-	Console m_console;
+	std::unique_ptr<SimulationWorld> m_simulation = nullptr;
+	CameraController m_cameraController;
+	DrawQueue m_drawQueue;
+
+	double m_cursorX = 0.0, m_cursorY = 0.0;
+
+public:
+	static void __windowRefreshCallback(GLFWwindow*);
+	static void __windowPositionCallback(GLFWwindow*, int x, int y);
+	static void __framebufferSizeCallback(GLFWwindow*, int width, int height);
+	static void __windowCloseCallback(GLFWwindow*);
+
+	static void __mousePositionCallback(GLFWwindow*, double xPos, double yPos);
+	static void __scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
+	static void __keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

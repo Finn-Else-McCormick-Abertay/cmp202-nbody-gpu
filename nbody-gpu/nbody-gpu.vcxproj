@@ -12,11 +12,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\nbody-gpu.cpp" />
+    <ClCompile Include="src\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Rendering\CameraController.cpp" />
+    <ClCompile Include="src\Rendering\Drawable.cpp" />
+    <ClCompile Include="src\Rendering\DrawQueue.cpp" />
+    <ClCompile Include="src\Simulation\GravityInteraction.cpp" />
+    <ClCompile Include="src\Rendering\RenderSimulation.cpp" />
+    <ClCompile Include="src\Simulation\SimulationWorld.cpp" />
     <ClCompile Include="src\Window\Console.cpp" />
     <ClCompile Include="src\Window\Application.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Simulation\Rendering.h" />
+    <ClInclude Include="src\MathsTypes.h" />
+    <ClInclude Include="src\Rendering\Camera.h" />
+    <ClInclude Include="src\Rendering\CameraController.h" />
+    <ClInclude Include="src\Rendering\Color.h" />
+    <ClInclude Include="src\Rendering\Drawable.h" />
+    <ClInclude Include="src\Rendering\DrawQueue.h" />
+    <ClInclude Include="src\Simulation\Body.h" />
+    <ClInclude Include="src\Simulation\Contants.h" />
+    <ClInclude Include="src\Simulation\GravityInteraction.h" />
+    <ClInclude Include="src\Simulation\Integration.h" />
+    <ClInclude Include="src\Rendering\RenderSimulation.h" />
     <ClInclude Include="src\Simulation\SimulationWorld.h" />
     <ClInclude Include="src\Window\Console.h" />
     <ClInclude Include="src\Window\Application.h" />

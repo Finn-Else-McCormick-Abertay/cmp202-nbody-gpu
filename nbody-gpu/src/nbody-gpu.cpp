@@ -3,6 +3,8 @@
 
 #include <Window/Application.h>
 
+#include <Simulation/SimulationWorld.h>
+
 using namespace sycl;
 
 // Create an exception handler for asynchronous SYCL exceptions
@@ -33,6 +35,14 @@ int main(int argc, char* argv[]) {
 	*/
 
 	Application::Init();
+	{
+		auto posDist = std::normal_distribution<float>(0.f, 50.f);
+		auto massDist = std::normal_distribution<float>(5.f, 1.f);
+
+		std::unique_ptr<SimulationWorld> worldPtr = std::make_unique<SimulationWorld>(SimulationWorld::RandomWorld(35, posDist, massDist));
+
+		Application::SetWorld(std::move(worldPtr));
+	}
 	Application::Enter();
 
 	return 0;

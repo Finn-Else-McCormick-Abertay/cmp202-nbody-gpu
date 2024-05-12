@@ -4,6 +4,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
+#include <Rendering/RenderSimulation.h>
+
 Application& Application::Singleton() {
 	static Application inst;
 	return inst;
@@ -42,13 +44,14 @@ void Application::Init() {
 	glewInit();
 
 	// Install callbacks
-	glfwSetWindowContentScaleCallback(inst.p_window, __windowContentScaleCallback);
-	glfwSetFramebufferSizeCallback(inst.p_window, __framebufferSizeCallback);
-	glfwSetWindowSizeCallback(inst.p_window, __windowSizeCallback);
 	glfwSetWindowRefreshCallback(inst.p_window, __windowRefreshCallback);
-	glfwSetWindowMaximizeCallback(inst.p_window, __windowMaximizeCallback);
-	glfwSetWindowFocusCallback(inst.p_window, __windowFocusCallback);
+	glfwSetWindowPosCallback(inst.p_window, __windowPositionCallback);
+	glfwSetFramebufferSizeCallback(inst.p_window, __framebufferSizeCallback);
 	glfwSetWindowCloseCallback(inst.p_window, __windowCloseCallback);
+
+	glfwSetCursorPosCallback(inst.p_window, __mousePositionCallback);
+	glfwSetScrollCallback(inst.p_window, __scrollCallback);
+	glfwSetKeyCallback(inst.p_window, __keyCallback);
 
 	// Setup Dear ImGui
 	IMGUI_CHECKVERSION();
@@ -71,6 +74,10 @@ void Application::Init() {
 	// Setup Platform/Renderer backends
 	ImGui_ImplGlfw_InitForOpenGL(inst.p_window, true);
 	ImGui_ImplOpenGL3_Init();
+
+	int windowWidth, windowHeight;
+	glfwGetWindowSize(inst.p_window, &windowWidth, &windowHeight);
+	inst.m_cameraController.SetViewport(ImVec2(windowWidth, windowHeight));
 }
 
 void Application::Enter() {
@@ -86,6 +93,33 @@ void Application::Update() {
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
+	// Create windows
+	const ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+	//ImGui::DockSpaceOverViewport(mainViewport);
+
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
+	windowFlags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+	//windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+	windowFlags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoMouseInputs;
+
+	ImGui::SetNextWindowPos(mainViewport->WorkPos);
+	ImGui::SetNextWindowSize(mainViewport->WorkSize);
+	ImGui::SetNextWindowViewport(mainViewport->ID);
+	ImGui::Begin("Main Window", NULL, windowFlags);
+
+	m_drawQueue.SetCamera(m_cameraController.Camera());
+	m_drawQueue.SetWindowOffset(to_float2(ImGui::GetWindowPos()));
+
+	if (World() != nullptr) {
+		RenderSimulation(*World(), m_drawQueue);
+	}
+
+	m_drawQueue.ImGuiRender(ImGui::GetWindowDrawList());
+
+	ImGui::End();
+
+	m_cameraController.DisplayInfoWindow();
 
 	// Rendering
 	ImGui::Render();
@@ -107,20 +141,64 @@ void Application::Update() {
 	glfwSwapBuffers(p_window);
 }
 
+SimulationWorld* Application::World() { return Singleton().m_simulation.get(); }
+void Application::SetWorld(std::unique_ptr<SimulationWorld>&& simWorld) { Singleton().m_simulation = std::move(simWorld); }
 
 Console& Application::Output() { return m_console; }
 
 
-void Application::__windowContentScaleCallback(GLFWwindow*, float xScale, float yScale) {}
+void Application::__windowRefreshCallback(GLFWwindow*) {
+	Singleton().Update();
+}
 
-void Application::__framebufferSizeCallback(GLFWwindow*, int width, int height) {}
+void Application::__windowPositionCallback(GLFWwindow*, int x, int y) {
+	Singleton().Update();
+}
 
-void Application::__windowSizeCallback(GLFWwindow*, int width, int height) {}
+void Application::__framebufferSizeCallback(GLFWwindow*, int width, int height) {
+	Singleton().m_cameraController.SetViewport(ImVec2(width, height));
+}
 
-void Application::__windowRefreshCallback(GLFWwindow*) {}
+void Application::__windowCloseCallback(GLFWwindow*) {}
 
-void Application::__windowMaximizeCallback(GLFWwindow*, int maximized) {}
 
-void Application::__windowFocusCallback(GLFWwindow*, int focused) {}
+void Application::__mousePositionCallback(GLFWwindow*, double xPos, double yPos) {
+	auto& inst = Singleton();
 
-void Application::__windowCloseCallback(GLFWwindow* glfwWindow) {}
+	float2 mouseMove = float2(inst.m_cursorX - xPos, inst.m_cursorY - yPos);
+
+	auto& io = ImGui::GetIO();
+	bool middleMouse = io.MouseDown[2];
+	bool shiftHeld = io.KeyShift;
+
+	if (middleMouse) {
+		if (shiftHeld) { inst.m_cameraController.Pan(mouseMove); }
+		else		   { inst.m_cameraController.Rotate(mouseMove); }
+	}
+
+	inst.m_cursorX = xPos;
+	inst.m_cursorY = yPos;
+}
+
+void Application::__scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+	auto& inst = Singleton();
+
+	inst.m_cameraController.Scale(yOffset);
+}
+
+void Application::__keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	auto& inst = Singleton();
+
+	if (action == GLFW_PRESS) {
+		switch (key) {
+		case GLFW_KEY_KP_1: inst.m_cameraController.SetView(CameraController::View::FRONT); break;
+		case GLFW_KEY_KP_3: inst.m_cameraController.SetView(CameraController::View::RIGHT); break;
+		case GLFW_KEY_KP_7: inst.m_cameraController.SetView(CameraController::View::TOP); break;
+		case GLFW_KEY_KP_9: inst.m_cameraController.ReverseView(); break;
+		case GLFW_KEY_KP_5:
+			inst.m_cameraController.SetType(
+				(inst.m_cameraController.CurrentType() == CameraController::ORTHOGRAPHIC) ? CameraController::PERSPECTIVE : CameraController::ORTHOGRAPHIC);
+			break;
+		}
+	}
+}
