@@ -4,7 +4,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <Rendering/RenderSimulation.h>
+#include <Rendering/DrawFunctions.h>
 
 Application& Application::Singleton() {
 	static Application inst;
@@ -102,6 +102,7 @@ void Application::Update() {
 	windowFlags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	//windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 	windowFlags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoMouseInputs;
+	windowFlags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground;
 
 	ImGui::SetNextWindowPos(mainViewport->WorkPos);
 	ImGui::SetNextWindowSize(mainViewport->WorkSize);
@@ -111,15 +112,16 @@ void Application::Update() {
 	m_drawQueue.SetCamera(m_cameraController.Camera());
 	m_drawQueue.SetWindowOffset(to_float2(ImGui::GetWindowPos()));
 
-	if (World() != nullptr) {
-		RenderSimulation(*World(), m_drawQueue);
-	}
+	DrawAxes(m_drawQueue);
+	DrawGrid(m_drawQueue);
+
+	if (World() != nullptr) { DrawSimulation(*World(), m_drawQueue); }
 
 	m_drawQueue.ImGuiRender(ImGui::GetWindowDrawList());
 
-	ImGui::End();
+	m_cameraController.DisplayInfoChildWindow();
 
-	m_cameraController.DisplayInfoWindow();
+	ImGui::End();
 
 	// Rendering
 	ImGui::Render();
@@ -191,6 +193,7 @@ void Application::__keyCallback(GLFWwindow* window, int key, int scancode, int a
 
 	if (action == GLFW_PRESS) {
 		switch (key) {
+		case GLFW_KEY_KP_0: inst.m_cameraController.Camera().SetPosition(float3()); break;
 		case GLFW_KEY_KP_1: inst.m_cameraController.SetView(CameraController::View::FRONT); break;
 		case GLFW_KEY_KP_3: inst.m_cameraController.SetView(CameraController::View::RIGHT); break;
 		case GLFW_KEY_KP_7: inst.m_cameraController.SetView(CameraController::View::TOP); break;

@@ -30,7 +30,7 @@
     <ClCompile Include="src\Simulation\SimulationWorld.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\RenderSimulation.cpp">
+    <ClCompile Include="src\Rendering\DrawFunctions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Camera.cpp">
@@ -53,7 +53,7 @@
     <ClInclude Include="src\Window\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\RenderSimulation.h">
+    <ClInclude Include="src\Rendering\DrawFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Simulation\SimulationWorld.h">

@@ -12,7 +12,7 @@ public:
 
 	CameraController(double fov = 120.0, double nearPlane = 0.1, double farPlane = 100'000.0);
 
-	const Camera& Camera() const;
+	Camera& Camera();
 
 	View CurrentView() const; CameraType CurrentType() const;
 	void SetView(View); void SetType(CameraType);
@@ -24,7 +24,7 @@ public:
 
 	void SetViewport(ImVec2);
 
-	void DisplayInfoWindow();
+	void DisplayInfoChildWindow();
 
 private:
 	std::unique_ptr<AbstractCamera> m_camera = nullptr;
@@ -38,9 +38,11 @@ private:
 
 	void RebuildCamera();
 
-	float m_panSpeed = 0.5f;
-	float m_rotSpeed = 0.01f;
+	float m_panSpeed = 0.2f;
+	float m_rotSpeed = 0.005f;
 	float m_scaleSpeed = 0.1f;
 
-	static constexpr float ORTHO_TO_PERSPECTIVE_SCALE_FACTOR = 0.0006f;
+	float m_scaleFactor = 4.f;
+
+	static constexpr float ORTHO_TO_PERSPECTIVE_SCALE_FACTOR = 0.00061f;
 };

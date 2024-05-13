@@ -12,4 +12,7 @@ namespace Color {
 	DECL_COLOR(RED,		1.0f, 0.0f, 0.0f, 1.0f);
 	DECL_COLOR(GREEN,	0.0f, 1.0f, 0.0f, 1.0f);
 	DECL_COLOR(BLUE,	0.0f, 0.0f, 1.0f, 1.0f);
+
+	DECL_COLOR(LIGHT_GRAY, 0.8f, 0.8f, 0.8f, 1.0f);
+	DECL_COLOR(DARK_GRAY, 0.2f, 0.2f, 0.2f, 1.0f);
 }

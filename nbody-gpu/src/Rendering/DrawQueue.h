@@ -22,3 +22,5 @@ private:
 	const Camera* p_camera = nullptr; float2 m_offset = float2();
 	std::priority_queue<DrawablePtr, std::vector<DrawablePtr>, std::function<bool(const DrawablePtr&, const DrawablePtr&)>> m_queue;
 };
+
+#define DRAW(queue, TYPE, ...) queue.Push(std::make_unique<Drawable::TYPE>(__VA_ARGS__))

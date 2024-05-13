@@ -30,7 +30,8 @@ const ImVec2& Camera::Viewport() const { return m_viewport; }
 void Camera::SetViewport(const ImVec2& viewport) { m_viewport = viewport; }
 
 void Camera::UpdateViewMatrix() {
-	m_viewMat = glm::scale(glm::lookAt(m_pos + Z_AXIS * RotationQuaternion(), m_pos, Y_AXIS), float3(m_scale, m_scale, m_scale));
+	m_viewMat = glm::lookAt(m_pos + Z_AXIS * RotationQuaternion(), m_pos, Y_AXIS * RotationQuaternion())
+		* glm::translate(glm::scale(glm::translate(mat4x4(1.f), m_pos), float3(m_scale, m_scale, m_scale)), -m_pos);
 }
 
 
@@ -40,7 +41,7 @@ float3 Camera::Project(const float3& point) const {
 
 
 
-PerspectiveCamera::PerspectiveCamera(double fov, double near, double far) : m_fov(fov), Camera(near, far) {}
+PerspectiveCamera::PerspectiveCamera(double fov, double near, double far) : Camera(near, far), m_fov(fov) {}
 
 void PerspectiveCamera::UpdateProjection() {
 	m_projectionMat = glm::perspectiveFov(m_fov, (double)Viewport().x, (double)Viewport().y, m_near, m_far);

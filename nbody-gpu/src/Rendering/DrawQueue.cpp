@@ -1,6 +1,6 @@
 #include "DrawQueue.h"
 
-DrawQueue::DrawQueue() : m_queue([](const DrawablePtr& lhs, const DrawablePtr& rhs)-> bool { return lhs->Depth() > rhs->Depth(); }) {}
+DrawQueue::DrawQueue() : m_queue([](const DrawablePtr& lhs, const DrawablePtr& rhs)-> bool { return lhs->Depth() < rhs->Depth(); }) {}
 
 void DrawQueue::SetWindowOffset(const float2& offset) { m_offset = offset; }
 
