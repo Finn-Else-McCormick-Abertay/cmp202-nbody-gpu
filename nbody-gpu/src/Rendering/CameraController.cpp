@@ -110,7 +110,7 @@ void CameraController::SetViewport(ImVec2 viewport) {
 
 
 void CameraController::DisplayInfoChildWindow() {
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoMouseInputs;
 	ImGuiChildFlags childFlags = ImGuiChildFlags_None;
 	//childFlags |= ImGuiChildFlags_FrameStyle;
 
@@ -121,7 +121,7 @@ void CameraController::DisplayInfoChildWindow() {
 	ImGui::BeginChild("Camera Gimbal", ImVec2(80.f, 80.f), childFlags, windowFlags);
 
 	DrawQueue drawQueue;
-	OrthographicCamera gimbalCam = OrthographicCamera(0.0, 2.f);
+	OrthographicCamera gimbalCam = OrthographicCamera(0.05f, 1.1f);
 	gimbalCam.SetViewport(ImGui::GetWindowSize());
 	gimbalCam.SetRotation(m_camera->Rotation());
 

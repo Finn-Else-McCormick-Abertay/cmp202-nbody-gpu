@@ -15,4 +15,10 @@ namespace Color {
 
 	DECL_COLOR(LIGHT_GRAY, 0.8f, 0.8f, 0.8f, 1.0f);
 	DECL_COLOR(DARK_GRAY, 0.2f, 0.2f, 0.2f, 1.0f);
+
+	/*
+	static ImU32 BACKGROUND = BLACK;
+	static ImU32 FOREGROUND = WHITE;
+	static ImU32 ACCENT = RED;
+	*/
 }

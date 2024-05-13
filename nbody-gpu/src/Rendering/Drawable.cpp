@@ -38,11 +38,14 @@ BezierCurve::BezierCurve(const std::vector<float3>& points, CurveType type, floa
 void BezierCurve::Project(const Camera& cam, const float2& offset) {
 	if (m_points.empty()) { return; }
 
+	float depthMin = INFINITY;
+
 	for (auto& point : m_points) {
 		point = cam.Project(point) + float3(offset, 0.f);
+		depthMin = std::min(point.z, depthMin);
 	}
 
-	m_depth = m_points.front().z;
+	m_depth = depthMin;
 }
 
 void BezierCurve::Draw(ImDrawList* drawList) {

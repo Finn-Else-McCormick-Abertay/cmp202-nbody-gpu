@@ -1,9 +1,5 @@
 #include "Application.h"
 
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
 #include <Rendering/DrawFunctions.h>
 
 Application& Application::Singleton() {
@@ -11,69 +7,41 @@ Application& Application::Singleton() {
 	return inst;
 }
 
-Application::Application() {
-	if (glfwInit()) {
-		Output().Info("Initialised GLFW.");
-	}
-	else {
-		Output().Error("GLFW failed to initialise.");
-	}
-}
-
 Application::~Application() {
-	if (p_imguiContext) {
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-	}
-	glfwTerminate();
 }
 
 void Application::Init() {
 	auto& inst = Singleton();
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	inst.p_window = glfwCreateWindow(640, 480, "CMP202 GPU Project", NULL, NULL);
+	auto [window, context] = WindowingApi::Init("CMP202 GPU Project",
+		[](GLFWwindow* window) {
+			glfwSetWindowRefreshCallback(window, __windowRefreshCallback);
+			glfwSetWindowPosCallback(window, __windowPositionCallback);
+			glfwSetFramebufferSizeCallback(window, __framebufferSizeCallback);
+			glfwSetWindowCloseCallback(window, __windowCloseCallback);
 
-	glfwMakeContextCurrent(inst.p_window);
-	glfwSwapInterval(1); // Vsync
+			glfwSetCursorPosCallback(window, __mousePositionCallback);
+			glfwSetScrollCallback(window, __scrollCallback);
+			glfwSetKeyCallback(window, __keyCallback);
+		});
 
-	// Setup OpenGL
-	glewInit();
+	inst.p_window = window;
+	inst.p_imguiContext = context;
 
-	// Install callbacks
-	glfwSetWindowRefreshCallback(inst.p_window, __windowRefreshCallback);
-	glfwSetWindowPosCallback(inst.p_window, __windowPositionCallback);
-	glfwSetFramebufferSizeCallback(inst.p_window, __framebufferSizeCallback);
-	glfwSetWindowCloseCallback(inst.p_window, __windowCloseCallback);
+	WindowingApi::SetWindowIcon(window, { "assets/icon/badicon.png", "assets/icon/badicon.png", "assets/icon/badicon.png" });
 
-	glfwSetCursorPosCallback(inst.p_window, __mousePositionCallback);
-	glfwSetScrollCallback(inst.p_window, __scrollCallback);
-	glfwSetKeyCallback(inst.p_window, __keyCallback);
+	//WindowingApi::RefreshTitleBarThemeColor(inst.p_window);
 
-	// Setup Dear ImGui
-	IMGUI_CHECKVERSION();
-	inst.p_imguiContext = ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+	/*
+	// System color callback
+	WindowingApi::SetSystemColorCallback([](bool isDarkMode, const std::map<WindowingApi::UIColorType, ImColor>& colorMap)->void {
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.Colors[ImGuiCol_Text] = colorMap.at(WindowingApi::UIColorType::FOREGROUND);
+		style.Colors[ImGuiCol_WindowBg] = colorMap.at(WindowingApi::UIColorType::BACKGROUND);
+		style.Colors[ImGuiCol_MenuBarBg] = colorMap.at(WindowingApi::UIColorType::BACKGROUND);
+	});
+	*/
 
-	// Setup Dear ImGui style
-	ImGui::StyleColorsDark();
-	// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-	ImGuiStyle& style = ImGui::GetStyle();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-	}
-
-	// Setup Platform/Renderer backends
-	ImGui_ImplGlfw_InitForOpenGL(inst.p_window, true);
-	ImGui_ImplOpenGL3_Init();
 
 	int windowWidth, windowHeight;
 	glfwGetWindowSize(inst.p_window, &windowWidth, &windowHeight);
@@ -90,23 +58,35 @@ void Application::Enter() {
 }
 
 void Application::Update() {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
+	WindowingApi::NewFrame();
+	{
+		const ImGuiViewport* mainViewport = ImGui::GetMainViewport();
 
-	// Create windows
-	const ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-	//ImGui::DockSpaceOverViewport(mainViewport);
+		DrawMenuBar();
+		DrawMainWindow(mainViewport);
+	}
+	WindowingApi::Render(p_window);
+}
 
+void Application::DrawMenuBar() {
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			ImGui::MenuItem("Menu Item");
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+}
+
+void Application::DrawMainWindow(const ImGuiViewport* viewport) {
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
 	windowFlags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-	//windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 	windowFlags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoMouseInputs;
 	windowFlags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground;
 
-	ImGui::SetNextWindowPos(mainViewport->WorkPos);
-	ImGui::SetNextWindowSize(mainViewport->WorkSize);
-	ImGui::SetNextWindowViewport(mainViewport->ID);
+	ImGui::SetNextWindowPos(viewport->WorkPos);
+	ImGui::SetNextWindowSize(viewport->WorkSize);
+	ImGui::SetNextWindowViewport(viewport->ID);
 	ImGui::Begin("Main Window", NULL, windowFlags);
 
 	m_drawQueue.SetCamera(m_cameraController.Camera());
@@ -116,7 +96,7 @@ void Application::Update() {
 	DrawGrid(m_drawQueue);
 
 	if (Simulation() != nullptr) {
-		Simulation()->Progress();
+		//Simulation()->Progress();
 		DrawSimulation(Simulation()->World(), m_drawQueue);
 	}
 
@@ -125,25 +105,6 @@ void Application::Update() {
 	m_cameraController.DisplayInfoChildWindow();
 
 	ImGui::End();
-
-	// Rendering
-	ImGui::Render();
-	int display_w, display_h;
-	glfwGetFramebufferSize(p_window, &display_w, &display_h);
-	glViewport(0, 0, display_w, display_h);
-	glClear(GL_COLOR_BUFFER_BIT);
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	// Update and Render additional Platform Windows
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-	{
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(p_window);
-	}
-
-	glfwSwapBuffers(p_window);
 }
 
 
@@ -175,12 +136,14 @@ void Application::__mousePositionCallback(GLFWwindow*, double xPos, double yPos)
 	float2 mouseMove = float2(inst.m_cursorX - xPos, inst.m_cursorY - yPos);
 
 	auto& io = ImGui::GetIO();
-	bool middleMouse = io.MouseDown[2];
-	bool shiftHeld = io.KeyShift;
+	if (!io.WantCaptureMouse) {
+		bool middleMouse = io.MouseDown[2];
+		bool shiftHeld = io.KeyShift;
 
-	if (middleMouse) {
-		if (shiftHeld) { inst.m_cameraController.Pan(mouseMove); }
-		else		   { inst.m_cameraController.Rotate(mouseMove); }
+		if (middleMouse) {
+			if (shiftHeld) { inst.m_cameraController.Pan(mouseMove); }
+			else { inst.m_cameraController.Rotate(mouseMove); }
+		}
 	}
 
 	inst.m_cursorX = xPos;

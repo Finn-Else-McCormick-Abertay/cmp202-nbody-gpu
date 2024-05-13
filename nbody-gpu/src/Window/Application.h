@@ -1,9 +1,6 @@
 #pragma once
 
-#include <GL/glew.h> 
-#include <GLFW/glfw3.h>
-
-#include <imgui.h>
+#include <Window/WindowingApi.h>
 
 #include "Console.h"
 #include <Simulation/Simulation.h>
@@ -26,11 +23,14 @@ public:
 	static Simulation* Simulation();
 
 private:
-	Application();
+	Application() = default;
 	Application(Application&) = delete;
 	~Application();
 
 	static Application& Singleton();
+
+	void DrawMenuBar();
+	void DrawMainWindow(const ImGuiViewport*);
 
 	Console m_console;
 

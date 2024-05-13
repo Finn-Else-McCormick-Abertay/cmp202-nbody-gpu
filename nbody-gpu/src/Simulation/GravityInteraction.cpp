@@ -1,6 +1,6 @@
 ﻿#include "GravityInteraction.h"
 
-#include <Simulation/Contants.h>
+#include <Simulation/Constants.h>
 
 // a_i = G * (m_j * r_ij) / (|r_ij|³)
 
