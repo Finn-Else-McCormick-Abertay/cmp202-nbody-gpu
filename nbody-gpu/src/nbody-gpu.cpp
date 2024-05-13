@@ -3,7 +3,7 @@
 
 #include <Window/Application.h>
 
-#include <Simulation/SimulationWorld.h>
+#include <Simulation/Simulation.h>
 
 using namespace sycl;
 
@@ -39,9 +39,12 @@ int main(int argc, char* argv[]) {
 		auto posDist = std::normal_distribution<float>(0.f, 50.f);
 		auto massDist = std::normal_distribution<float>(5.f, 1.f);
 
-		std::unique_ptr<SimulationWorld> worldPtr = std::make_unique<SimulationWorld>(SimulationWorld::RandomWorld(35, posDist, massDist));
-
-		Application::SetWorld(std::move(worldPtr));
+		Application::SetSimulation(
+			std::make_unique<Simulation>(
+				std::make_unique<SimulationWorld>(SimulationWorld::RandomWorld(35, posDist, massDist)),
+				0.1f
+			)
+		);
 	}
 	Application::Enter();
 

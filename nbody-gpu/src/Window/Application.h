@@ -6,7 +6,7 @@
 #include <imgui.h>
 
 #include "Console.h"
-#include <Simulation/SimulationWorld.h>
+#include <Simulation/Simulation.h>
 #include <Rendering/CameraController.h>
 #include <Rendering/DrawQueue.h>
 
@@ -20,8 +20,10 @@ public:
 
 	Console& Output();
 
-	static SimulationWorld* World();
-	static void SetWorld(std::unique_ptr<SimulationWorld>&&);
+	using SimulationPtr = std::unique_ptr<Simulation>;
+	static void SetSimulation(SimulationPtr&&);
+
+	static Simulation* Simulation();
 
 private:
 	Application();
@@ -35,7 +37,7 @@ private:
 	GLFWwindow* p_window = nullptr;
 	ImGuiContext* p_imguiContext = nullptr;
 
-	std::unique_ptr<SimulationWorld> m_simulation = nullptr;
+	SimulationPtr m_simulation = nullptr;
 	CameraController m_cameraController;
 	DrawQueue m_drawQueue;
 

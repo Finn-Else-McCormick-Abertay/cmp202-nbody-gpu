@@ -115,7 +115,10 @@ void Application::Update() {
 	DrawAxes(m_drawQueue);
 	DrawGrid(m_drawQueue);
 
-	if (World() != nullptr) { DrawSimulation(*World(), m_drawQueue); }
+	if (Simulation() != nullptr) {
+		Simulation()->Progress();
+		DrawSimulation(Simulation()->World(), m_drawQueue);
+	}
 
 	m_drawQueue.ImGuiRender(ImGui::GetWindowDrawList());
 
@@ -143,8 +146,10 @@ void Application::Update() {
 	glfwSwapBuffers(p_window);
 }
 
-SimulationWorld* Application::World() { return Singleton().m_simulation.get(); }
-void Application::SetWorld(std::unique_ptr<SimulationWorld>&& simWorld) { Singleton().m_simulation = std::move(simWorld); }
+
+
+Simulation* Application::Simulation() { return Singleton().m_simulation.get(); }
+void Application::SetSimulation(SimulationPtr&& ptr) { Singleton().m_simulation = std::move(ptr); }
 
 Console& Application::Output() { return m_console; }
 

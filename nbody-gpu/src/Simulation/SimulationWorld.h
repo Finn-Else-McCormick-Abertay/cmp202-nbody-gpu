@@ -19,6 +19,9 @@ public:
 	const Body& at(size_t index) const;
 	size_t size() const;
 
+	std::vector<Body>::iterator begin();
+	std::vector<Body>::iterator end();
+
 	std::vector<Body>::const_iterator cbegin() const;
 	std::vector<Body>::const_iterator cend() const;
 
@@ -44,7 +47,7 @@ SimulationWorld SimulationWorld::RandomWorld(size_t size, PositionDistribution& 
 	for (size_t i = 0; i < size; ++i) {
 		glm::vec3 pos = glm::vec3(posDist(gen), posDist(gen), posDist(gen));
 		float mass = massDist(gen);
-		world.m_bodies.emplace_back(pos, mass);
+		world.m_bodies.emplace_back(pos, glm::vec3(), mass);
 	}
 
 	return world;

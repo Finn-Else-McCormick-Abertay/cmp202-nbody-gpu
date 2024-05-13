@@ -18,6 +18,8 @@
     <ClCompile Include="src\Rendering\DrawQueue.cpp" />
     <ClCompile Include="src\Simulation\GravityInteraction.cpp" />
     <ClCompile Include="src\Rendering\DrawFunctions.cpp" />
+    <ClCompile Include="src\Simulation\Integration.cpp" />
+    <ClCompile Include="src\Simulation\Simulation.cpp" />
     <ClCompile Include="src\Simulation\SimulationWorld.cpp" />
     <ClCompile Include="src\Window\Console.cpp" />
     <ClCompile Include="src\Window\Application.cpp" />
@@ -34,6 +36,7 @@
     <ClInclude Include="src\Simulation\GravityInteraction.h" />
     <ClInclude Include="src\Simulation\Integration.h" />
     <ClInclude Include="src\Rendering\DrawFunctions.h" />
+    <ClInclude Include="src\Simulation\Simulation.h" />
     <ClInclude Include="src\Simulation\SimulationWorld.h" />
     <ClInclude Include="src\Window\Console.h" />
     <ClInclude Include="src\Window\Application.h" />
