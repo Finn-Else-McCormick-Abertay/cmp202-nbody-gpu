@@ -21,10 +21,13 @@
     <ClCompile Include="src\Simulation\Integration.cpp" />
     <ClCompile Include="src\Simulation\Simulation.cpp" />
     <ClCompile Include="src\Simulation\SimulationWorld.cpp" />
+    <ClCompile Include="src\Simulation\Time.cpp" />
     <ClCompile Include="src\Window\Console.cpp" />
     <ClCompile Include="src\Window\Application.cpp" />
     <ClCompile Include="src\Window\STBImpl.cpp" />
     <ClCompile Include="src\Window\WindowingApiWin32Impl.cpp" />
+    <ClInclude Include="src\Simulation\RandomGen.h" />
+    <ClInclude Include="src\Simulation\Time.h" />
     <ClInclude Include="src\Window\WindowingApiWin32Impl.h" />
     <ClCompile Include="src\Window\WindowingApi.cpp" />
   </ItemGroup>

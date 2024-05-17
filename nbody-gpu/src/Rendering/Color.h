@@ -13,12 +13,10 @@ namespace Color {
 	DECL_COLOR(GREEN,	0.0f, 1.0f, 0.0f, 1.0f);
 	DECL_COLOR(BLUE,	0.0f, 0.0f, 1.0f, 1.0f);
 
+	DECL_COLOR(YELLOW,	1.0f, 1.0f, 0.0f, 1.0f);
+	DECL_COLOR(CYAN,	0.0f, 1.0f, 1.0f, 1.0f);
+	DECL_COLOR(MAGENTA, 1.0f, 0.0f, 1.0f, 1.0f);
+
 	DECL_COLOR(LIGHT_GRAY, 0.8f, 0.8f, 0.8f, 1.0f);
 	DECL_COLOR(DARK_GRAY, 0.2f, 0.2f, 0.2f, 1.0f);
-
-	/*
-	static ImU32 BACKGROUND = BLACK;
-	static ImU32 FOREGROUND = WHITE;
-	static ImU32 ACCENT = RED;
-	*/
 }

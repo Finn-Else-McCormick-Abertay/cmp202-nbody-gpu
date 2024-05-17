@@ -60,6 +60,9 @@
     <ClCompile Include="src\Window\STBImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Simulation\Time.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Window\Application.h">
@@ -112,6 +115,12 @@
     </ClInclude>
     <ClInclude Include="src\Window\WindowingApiWin32Impl.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Simulation\Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Simulation\RandomGen.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

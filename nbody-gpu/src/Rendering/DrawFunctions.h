@@ -3,10 +3,16 @@
 #include <Simulation/SimulationWorld.h>
 #include <Rendering/DrawQueue.h>
 
-void DrawAxes(DrawQueue&);
+#include <set>
 
-void DrawGimbal(DrawQueue&);
+namespace Rendering {
 
-void DrawGrid(DrawQueue&);
+	void DrawAxes(DrawQueue&);
 
-void DrawSimulation(const SimulationWorld&, DrawQueue&);
+	void DrawGimbal(DrawQueue&);
+
+	void DrawGrid(DrawQueue&, bool skipLinesOnAxis = true);
+
+	void DrawSimulation(const Simulation::World&, DrawQueue&, const std::set<int>& highlighted = {});
+
+}

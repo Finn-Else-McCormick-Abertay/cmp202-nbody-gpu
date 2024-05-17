@@ -36,13 +36,22 @@ int main(int argc, char* argv[]) {
 
 	Application::Init();
 	{
-		auto posDist = std::normal_distribution<float>(0.f, 50.f);
-		auto massDist = std::normal_distribution<float>(5.f, 1.f);
+		std::normal_distribution<float>::param_type massParams{ 5.f, 1.f };
+		std::normal_distribution<float>::param_type hParams{ 0.f, 50.f };
+		std::normal_distribution<float>::param_type vParams{ 0.f, 5.f };
+		std::normal_distribution<float>::param_type speedParams{ 0.f, 0.0001f };
+
+		auto generator = Random::PlanetaryDiskGenerator<
+			std::normal_distribution<float>,
+			std::normal_distribution<float>,
+			std::normal_distribution<float>,
+			std::normal_distribution<float>
+		> (massParams, hParams, vParams, speedParams);
 
 		Application::SetSimulation(
-			std::make_unique<Simulation>(
-				std::make_unique<SimulationWorld>(SimulationWorld::RandomWorld(35, posDist, massDist)),
-				0.1f
+			std::make_unique<Simulation::Instance>(
+				std::make_unique<Simulation::World>(Simulation::World::RandomWorld(35, generator)),
+				Duration(1.f)
 			)
 		);
 	}

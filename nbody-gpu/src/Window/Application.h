@@ -17,10 +17,9 @@ public:
 
 	Console& Output();
 
-	using SimulationPtr = std::unique_ptr<Simulation>;
-	static void SetSimulation(SimulationPtr&&);
+	static void SetSimulation(std::unique_ptr<Simulation::Instance>&&);
 
-	static Simulation* Simulation();
+	static Simulation::Instance* Simulation();
 
 private:
 	Application() = default;
@@ -30,18 +29,32 @@ private:
 	static Application& Singleton();
 
 	void DrawMenuBar();
-	void DrawMainWindow(const ImGuiViewport*);
+	void DrawMainWindow();
+	float DrawGenerateWindow(float vOffset);
+	float DrawTimeWindow(float vOffset);
+	float DrawInspectWindow(float vOffset);
+	float DrawDebugWindow(float vOffset);
+
+	static float DrawWindowGeneric(std::string name, ImGuiWindowFlags windowFlags, bool* p_show, Rendering::float2 offset, Rendering::float2 size, const std::function<void()>&);
 
 	Console m_console;
 
 	GLFWwindow* p_window = nullptr;
 	ImGuiContext* p_imguiContext = nullptr;
+	bool m_imguiMidFrame = false;
+	static bool ImGuiMidFrame();
 
-	SimulationPtr m_simulation = nullptr;
-	CameraController m_cameraController;
-	DrawQueue m_drawQueue;
+	std::unique_ptr<Simulation::Instance> m_simulation = nullptr;
+	Rendering::CameraController m_cameraController;
+	Rendering::DrawQueue m_drawQueue;
 
 	double m_cursorX = 0.0, m_cursorY = 0.0;
+
+	bool m_showAxes = true, m_showGrid = true;
+	bool m_showGenerateWindow = true;
+	bool m_showTimeWindow = true; int m_stepsPerFrame = 1; bool m_simPaused = true; float m_stepLengthNextSim = 1.f;
+	bool m_showInspectWindow = false; int m_inspectSelectedIndex = -1;
+	bool m_showDebugWindow = false;
 
 public:
 	static void __windowRefreshCallback(GLFWwindow*);

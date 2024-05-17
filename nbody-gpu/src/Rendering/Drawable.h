@@ -5,7 +5,7 @@
 #include <Rendering/Color.h>
 #include <vector>
 
-namespace Drawable {
+namespace Rendering::Drawable {
 
 	class AbstractDrawable
 	{

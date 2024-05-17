@@ -1,6 +1,6 @@
 #include "Drawable.h"
 
-using namespace Drawable;
+using namespace Rendering::Drawable;
 
 Point::Point(const float3& pos, float size, ImU32 color) : m_pos(pos), m_size(size), m_color(color) {}
 

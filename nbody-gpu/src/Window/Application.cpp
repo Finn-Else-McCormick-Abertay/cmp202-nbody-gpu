@@ -1,6 +1,9 @@
 #include "Application.h"
 
 #include <Rendering/DrawFunctions.h>
+#include <imgui_internal.h>
+
+using namespace Rendering;
 
 Application& Application::Singleton() {
 	static Application inst;
@@ -30,19 +33,6 @@ void Application::Init() {
 
 	WindowingApi::SetWindowIcon(window, { "assets/icon/badicon.png", "assets/icon/badicon.png", "assets/icon/badicon.png" });
 
-	//WindowingApi::RefreshTitleBarThemeColor(inst.p_window);
-
-	/*
-	// System color callback
-	WindowingApi::SetSystemColorCallback([](bool isDarkMode, const std::map<WindowingApi::UIColorType, ImColor>& colorMap)->void {
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.Colors[ImGuiCol_Text] = colorMap.at(WindowingApi::UIColorType::FOREGROUND);
-		style.Colors[ImGuiCol_WindowBg] = colorMap.at(WindowingApi::UIColorType::BACKGROUND);
-		style.Colors[ImGuiCol_MenuBarBg] = colorMap.at(WindowingApi::UIColorType::BACKGROUND);
-	});
-	*/
-
-
 	int windowWidth, windowHeight;
 	glfwGetWindowSize(inst.p_window, &windowWidth, &windowHeight);
 	inst.m_cameraController.SetViewport(ImVec2(windowWidth, windowHeight));
@@ -58,31 +48,53 @@ void Application::Enter() {
 }
 
 void Application::Update() {
-	WindowingApi::NewFrame();
+	WindowingApi::NewFrame(); m_imguiMidFrame = true;
 	{
-		const ImGuiViewport* mainViewport = ImGui::GetMainViewport();
-
 		DrawMenuBar();
-		DrawMainWindow(mainViewport);
+		DrawMainWindow();
+
+		float currentHeight = 140.f;
+		const float margin = 10.f;
+
+		auto propogateHeight = [&](auto DrawFunc) {
+			float windowHeight = ((*this).*DrawFunc)(currentHeight);
+			if (windowHeight > 0.f) { currentHeight += windowHeight + margin; }
+		};
+
+		propogateHeight(&Application::DrawGenerateWindow);
+		propogateHeight(&Application::DrawTimeWindow);
+		propogateHeight(&Application::DrawInspectWindow);
+		propogateHeight(&Application::DrawDebugWindow);
 	}
-	WindowingApi::Render(p_window);
+	WindowingApi::Render(p_window); m_imguiMidFrame = false;
 }
 
 void Application::DrawMenuBar() {
 	if (ImGui::BeginMainMenuBar()) {
+		ImGui::PushItemFlag(ImGuiItemFlags_SelectableDontClosePopup, true);
 		if (ImGui::BeginMenu("File")) {
 			ImGui::MenuItem("Menu Item");
 			ImGui::EndMenu();
 		}
+		if (ImGui::BeginMenu("View")) {
+			ImGui::MenuItem("Generate Window", "G", &m_showGenerateWindow);
+			ImGui::MenuItem("Time Control Panel", "T", &m_showTimeWindow);
+			ImGui::MenuItem("Inspect Window", "I", &m_showInspectWindow);
+			ImGui::MenuItem("Debug Window", "D", &m_showDebugWindow);
+			ImGui::EndMenu();
+		}
+		ImGui::PopItemFlag();
 		ImGui::EndMainMenuBar();
 	}
 }
 
-void Application::DrawMainWindow(const ImGuiViewport* viewport) {
+void Application::DrawMainWindow() {
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
 	windowFlags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 	windowFlags |= ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoNavInputs | ImGuiWindowFlags_NoMouseInputs;
 	windowFlags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground;
+
+	const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
 	ImGui::SetNextWindowPos(viewport->WorkPos);
 	ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -92,12 +104,12 @@ void Application::DrawMainWindow(const ImGuiViewport* viewport) {
 	m_drawQueue.SetCamera(m_cameraController.Camera());
 	m_drawQueue.SetWindowOffset(to_float2(ImGui::GetWindowPos()));
 
-	DrawAxes(m_drawQueue);
-	DrawGrid(m_drawQueue);
+	if (m_showAxes) DrawAxes(m_drawQueue);
+	if (m_showGrid) DrawGrid(m_drawQueue, m_showAxes);
 
 	if (Simulation() != nullptr) {
-		//Simulation()->Progress();
-		DrawSimulation(Simulation()->World(), m_drawQueue);
+		Simulation()->Progress(m_simPaused ? 0 : m_stepsPerFrame);
+		DrawSimulation(Simulation()->World(), m_drawQueue, { m_inspectSelectedIndex });
 	}
 
 	m_drawQueue.ImGuiRender(ImGui::GetWindowDrawList());
@@ -107,19 +119,112 @@ void Application::DrawMainWindow(const ImGuiViewport* viewport) {
 	ImGui::End();
 }
 
+float Application::DrawGenerateWindow(float vOffset) {
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
 
+	return DrawWindowGeneric("Generate", windowFlags, &m_showGenerateWindow, float2(25.f, vOffset), float2(300.f, 130.f),
+		[&]() {
+			auto simulation = Simulation();
 
-Simulation* Application::Simulation() { return Singleton().m_simulation.get(); }
-void Application::SetSimulation(SimulationPtr&& ptr) { Singleton().m_simulation = std::move(ptr); }
+			if (simulation) {
+			}
+		});
+}
+
+float Application::DrawTimeWindow(float vOffset) {
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
+
+	return DrawWindowGeneric("Time Control", windowFlags, &m_showTimeWindow, float2(25.f, vOffset), float2(300.f, 130.f),
+		[&]() {
+			auto simulation = Simulation();
+			if (simulation) {
+				if (!simulation->Started()) {
+					if (ImGui::Button("Begin")) {
+						m_simulation = std::unique_ptr<Simulation::Instance>(new Simulation::Instance(*m_simulation, Duration(m_stepLengthNextSim)));
+						m_simPaused = false;
+					}
+					if (ImGui::InputFloat("Step length", &m_stepLengthNextSim, 1.f, 100.f, "%.3f seconds")) {
+						m_stepLengthNextSim = std::max(m_stepLengthNextSim, 0.f);
+					}
+					auto stepDur = Duration(m_stepLengthNextSim);
+					ImGui::Text("Step Length: %s", stepDur.AsFormattedString().c_str());
+				}
+				else {
+					if (ImGui::Button(m_simPaused ? "Play" : "Pause")) { m_simPaused = !m_simPaused; }
+					ImGui::Text("Step Length: %s", simulation->StepLength().AsFormattedString().c_str());
+					float stepsPerFrameAsFloat = m_stepsPerFrame;
+					if (ImGui::InputFloat("Multiplier", &stepsPerFrameAsFloat, 1.f, 5.f, "%gx")) {
+						m_stepsPerFrame = static_cast<int>(stepsPerFrameAsFloat);
+					}
+					Duration elapsedTime = simulation->StepsTaken() * simulation->StepLength();
+					ImGui::Text("Elapsed Time: %s", elapsedTime.AsFormattedString().c_str());
+				}
+			}
+		});
+}
+
+float Application::DrawInspectWindow(float vOffset) {
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
+
+	return DrawWindowGeneric("Inspect", windowFlags, &m_showInspectWindow, float2(25.f, vOffset), float2(),
+		[&]() {
+			auto simulation = Simulation();
+			if (simulation) {
+				auto& world = simulation->World();
+				ImGui::Text("World size: %i", world.size());
+				ImGui::InputInt("Body index", &m_inspectSelectedIndex);
+				if (m_inspectSelectedIndex >= 0 && m_inspectSelectedIndex < world.size()) {
+					auto& body = world.at(m_inspectSelectedIndex);
+					ImGui::Text("Pos: %g, %g, %g", body.position.x, body.position.y, body.position.z);
+					ImGui::Text("Vel: %g, %g, %g", body.velocity.x, body.velocity.y, body.velocity.z);
+					ImGui::Text("Mass: %g", body.mass);
+				}
+			}
+		});
+}
+
+float Application::DrawDebugWindow(float vOffset) {
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoSavedSettings;
+
+	return DrawWindowGeneric("Debug", windowFlags, &m_showDebugWindow, float2(25.f, vOffset), float2(),
+		[&]() {
+		});
+}
+
+float Application::DrawWindowGeneric(std::string name, ImGuiWindowFlags windowFlags, bool* p_show, float2 offset, float2 size, const std::function<void()>& Func) {
+	float windowHeight = size.y;
+
+	if ((p_show == NULL) || (*p_show)) {
+		const ImGuiViewport* mainViewport = ImGui::GetMainViewport();
+		float2 windowPos = to_float2(mainViewport->WorkPos) + offset;
+
+		ImGui::SetNextWindowPos(to_imvec(windowPos), ImGuiCond_Appearing);
+		if (windowHeight == 0.f) { windowFlags |= ImGuiWindowFlags_AlwaysAutoResize; } else { ImGui::SetNextWindowSize(to_imvec(size), ImGuiCond_Appearing); }
+		ImGui::Begin(name.c_str(), p_show, windowFlags);
+
+		Func();
+
+		if (windowHeight == 0.f) { windowHeight = ImGui::GetWindowHeight(); }
+		ImGui::End();
+	}
+
+	return windowHeight;
+}
+
+Simulation::Instance* Application::Simulation() { return Singleton().m_simulation.get(); }
+void Application::SetSimulation(std::unique_ptr<Simulation::Instance>&& ptr) { Singleton().m_simulation = std::move(ptr); }
 
 Console& Application::Output() { return m_console; }
 
+bool Application::ImGuiMidFrame() { return Singleton().m_imguiMidFrame; }
 
 void Application::__windowRefreshCallback(GLFWwindow*) {
+	if (ImGuiMidFrame()) { return; }
 	Singleton().Update();
 }
 
 void Application::__windowPositionCallback(GLFWwindow*, int x, int y) {
+	if (ImGuiMidFrame()) { return; }
 	Singleton().Update();
 }
 

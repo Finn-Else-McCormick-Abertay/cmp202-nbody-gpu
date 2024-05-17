@@ -2,13 +2,21 @@
 
 #include <MathsTypes.h>
 
-struct Body
-{
-	float3 pos, vel;
-	float mass;
+namespace Simulation {
 
-	Body(float3 pos, float3 vel, float mass) : pos(pos), vel(vel), mass(mass) {}
-	Body() = default;
-	Body(const Body&) = default;
-	Body(Body&) = default;
-};
+	struct GravityBody
+	{
+		float mass;
+		float3 position;
+	};
+
+	struct Body
+	{
+		float mass;
+		float3 position;
+		float3 velocity;
+
+		operator GravityBody() const { return GravityBody{ mass, position }; }
+	};
+
+}

@@ -3,46 +3,50 @@
 #include <Rendering/Camera.h>
 #include <memory>
 
-class CameraController
-{
-private: using AbstractCamera = Camera;
-public:
-	enum CameraType { ORTHOGRAPHIC, PERSPECTIVE };
-	enum class View { FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM, USER };
+namespace Rendering {
 
-	CameraController(double fov = 120.0, double nearPlane = 0.1, double farPlane = 100'000.0);
+	class CameraController
+	{
+	private: using AbstractCamera = Camera;
+	public:
+		enum CameraType { ORTHOGRAPHIC, PERSPECTIVE };
+		enum class View { FRONT, BACK, LEFT, RIGHT, TOP, BOTTOM, USER };
 
-	Camera& Camera();
+		CameraController(double fov = 120.0, double nearPlane = 0.1, double farPlane = 100'000.0);
 
-	View CurrentView() const; CameraType CurrentType() const;
-	void SetView(View); void SetType(CameraType);
-	void ReverseView();
+		Camera& Camera();
 
-	void Pan(const float2& mouseMove);
-	void Rotate(const float2& mouseMove);
-	void Scale(float mouseWheel);
+		View CurrentView() const; CameraType CurrentType() const;
+		void SetView(View); void SetType(CameraType);
+		void ReverseView();
 
-	void SetViewport(ImVec2);
+		void Pan(const float2& mouseMove);
+		void Rotate(const float2& mouseMove);
+		void Scale(float mouseWheel);
 
-	void DisplayInfoChildWindow();
+		void SetViewport(ImVec2);
 
-private:
-	std::unique_ptr<AbstractCamera> m_camera = nullptr;
+		void DisplayInfoChildWindow();
 
-	View m_view = View::FRONT;
-	CameraType m_currentType = ORTHOGRAPHIC, m_returnType = ORTHOGRAPHIC;
+	private:
+		std::unique_ptr<AbstractCamera> m_camera = nullptr;
 
-	float m_scale = 1.f;
-	double m_fov, m_nearPlane, m_farPlane;
-	ImVec2 m_viewport;
+		View m_view = View::FRONT;
+		CameraType m_currentType = ORTHOGRAPHIC, m_returnType = ORTHOGRAPHIC;
 
-	void RebuildCamera();
+		float m_scale = 1.f;
+		double m_fov, m_nearPlane, m_farPlane;
+		ImVec2 m_viewport;
 
-	float m_panSpeed = 0.2f;
-	float m_rotSpeed = 0.005f;
-	float m_scaleSpeed = 0.1f;
+		void RebuildCamera();
 
-	float m_scaleFactor = 4.f;
+		float m_panSpeed = 0.2f;
+		float m_rotSpeed = 0.005f;
+		float m_scaleSpeed = 0.1f;
 
-	static constexpr float ORTHO_TO_PERSPECTIVE_SCALE_FACTOR = 0.00061f;
-};
+		float m_scaleFactor = 4.f;
+
+		static constexpr float ORTHO_TO_PERSPECTIVE_SCALE_FACTOR = 0.00061f;
+	};
+
+}

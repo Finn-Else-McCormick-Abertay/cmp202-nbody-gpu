@@ -3,18 +3,42 @@
 #include "GravityInteraction.h"
 #include "Integration.h"
 
-Simulation::Simulation(std::unique_ptr<SimulationWorld>&& world, float timeStep) : m_world(std::move(world)), m_timeStep(timeStep) {}
+using namespace Simulation;
 
-const SimulationWorld& Simulation::World() const { return *m_world; }
-float Simulation::StepLength() const { return m_timeStep; }
+Simulation::Instance::Instance(std::unique_ptr<SimWorld>&& world, Duration timeStep) : m_world(std::move(world)), m_timeStep(timeStep) {}
+
+Simulation::Instance::Instance(Instance& other) : m_world(std::move(other.m_world)), m_timeStep(std::move(other.m_timeStep)) {}
+Simulation::Instance::Instance(Instance& other, Duration timeStep) : Instance(other) { m_timeStep = timeStep; }
+
+const World& Simulation::Instance::World() const { return *m_world; }
+Duration Simulation::Instance::StepLength() const { return m_timeStep; }
+int Simulation::Instance::StepsTaken() const { return m_stepsTaken; }
+bool Simulation::Instance::Started() const { return m_started; }
 
 
-void Simulation::Progress(int steps) {
+void Simulation::Instance::Progress(int steps) {
 	for (int i = 0; i < steps; ++i) {
-		for (auto it = m_world->begin(); it != m_world->end(); ++it) {
-			Body& body = *it;
+		PerformStep();
+	}
+}
 
-			body = LeapfrogIntegrate(body, float3(0.1f, 0.f, 0.f), StepLength());
+void Simulation::Instance::PerformStep() {
+	++m_stepsTaken; m_started = true;
+	std::vector<float3> bodyAccelerations; bodyAccelerations.reserve(m_world->size());
+	for (int i = 0; i < m_world->size(); ++i) {
+		float3 rootAccel = float3();
+		auto& rootBody = m_world->at(i);
+		for (int j = 0; j < m_world->size(); ++j) {
+			if (i == j) { continue; }
+			auto& interactingBody = m_world->at(j);
+			rootAccel += BodyBodyInteractionPlummer(rootBody, interactingBody, 0.f);
 		}
+		bodyAccelerations.emplace_back(rootAccel);
+	}
+
+	for (int i = 0; i < m_world->size(); ++i) {
+		Body& body = (*m_world)[i];
+
+		body = LeapfrogIntegrate(body, bodyAccelerations.at(i), m_timeStep);
 	}
 }

@@ -1,19 +1,34 @@
 #pragma once
 
 #include <Simulation/SimulationWorld.h>
+#include <Simulation/Time.h>
 #include <memory>
 
-class Simulation
-{
-public:
-	Simulation(std::unique_ptr<SimulationWorld>&&, float timeStep);
+namespace Simulation {
 
-	void Progress(int steps = 1);
+	class Instance
+	{
+		using SimWorld = Simulation::World;
+	public:
+		Instance(std::unique_ptr<World>&&, Duration timeStep);
+		Instance(Instance& other);
+		Instance(Instance& other, Duration timeStep);
 
-	const SimulationWorld& World() const;
-	float StepLength() const;
+		void Progress(int steps = 1);
 
-private:
-	std::unique_ptr<SimulationWorld> m_world;
-	float m_timeStep;
-};
+		const World& World() const;
+		Duration StepLength() const;
+		int StepsTaken() const;
+
+		bool Started() const;
+
+	private:
+		void PerformStep();
+
+		std::unique_ptr<SimWorld> m_world;
+		Duration m_timeStep;
+		int m_stepsTaken = 0;
+		bool m_started = false;
+	};
+
+}

@@ -4,6 +4,7 @@
     "glew",
     "glm",
     "stb",
+    "nlohmann-json",
     {
       "name": "imgui",
       "features": [

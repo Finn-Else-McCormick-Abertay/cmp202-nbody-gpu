@@ -1,5 +1,8 @@
 #pragma once
 
 #include <Simulation/Body.h>
+#include <Simulation/Time.h>
 
-Body LeapfrogIntegrate(Body body, float3 acceleration, float timeStep);
+namespace Simulation {
+	Body LeapfrogIntegrate(Body body, float3 acceleration, Duration timeStep);
+}

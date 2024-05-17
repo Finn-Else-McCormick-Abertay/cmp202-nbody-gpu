@@ -6,21 +6,25 @@
 
 #include <Rendering/Drawable.h>
 
-class DrawQueue
-{
-public:
-	DrawQueue();
+namespace Rendering {
 
-	using DrawablePtr = std::unique_ptr<Drawable::AbstractDrawable>;
-	void Push(DrawablePtr&&);
+	class DrawQueue
+	{
+	public:
+		DrawQueue();
 
-	void SetWindowOffset(const float2&);
-	void SetCamera(const Camera&);
-	void ImGuiRender(ImDrawList*);
+		using DrawablePtr = std::unique_ptr<Drawable::AbstractDrawable>;
+		void Push(DrawablePtr&&);
 
-private:
-	const Camera* p_camera = nullptr; float2 m_offset = float2();
-	std::priority_queue<DrawablePtr, std::vector<DrawablePtr>, std::function<bool(const DrawablePtr&, const DrawablePtr&)>> m_queue;
-};
+		void SetWindowOffset(const float2&);
+		void SetCamera(const Camera&);
+		void ImGuiRender(ImDrawList*);
 
-#define DRAW(queue, TYPE, ...) queue.Push(std::make_unique<Drawable::TYPE>(__VA_ARGS__))
+	private:
+		const Camera* p_camera = nullptr; float2 m_offset = float2();
+		std::priority_queue<DrawablePtr, std::vector<DrawablePtr>, std::function<bool(const DrawablePtr&, const DrawablePtr&)>> m_queue;
+	};
+
+}
+
+#define DRAW(queue, TYPE, ...) queue.Push(std::make_unique<Rendering::Drawable::TYPE>(__VA_ARGS__))
