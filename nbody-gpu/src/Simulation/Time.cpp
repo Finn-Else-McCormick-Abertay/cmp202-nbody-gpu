@@ -96,7 +96,8 @@ std::vector<TimeUnit> TimeUnit::UnitsHighOrdered() {
 
 
 
-Duration::Duration(float seconds) : m_seconds(seconds) {  }
+Duration::Duration(float seconds) : m_seconds(seconds) {}
+Duration::Duration(std::chrono::nanoseconds ns) : m_seconds(static_cast<float>(ns.count()) * 1.e-9f) {}
 Duration::Duration() : m_seconds(0.f) {}
 
 float Duration::AsSeconds() const { return m_seconds; }

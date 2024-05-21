@@ -12,6 +12,7 @@ Simulation::Instance::Instance(std::unique_ptr<SimWorld>&& world, Duration timeS
 Simulation::Instance::Instance(Instance& other)
 	: m_world(std::move(other.m_world)), m_timeStep(std::move(other.m_timeStep)), m_softening(other.m_softening),
 	m_runMode(other.m_runMode), m_gravityStepGroupSize(other.m_gravityStepGroupSize), m_integrationStepGroupSize(other.m_integrationStepGroupSize),
+	m_profiler(std::move(other.m_profiler)),
 	m_queue(other.m_queue) {}
 
 queue Simulation::Instance::SyclSetup() {
@@ -58,12 +59,20 @@ void Simulation::Instance::SetGroupSize(int gravStep, int intStep) {
 	m_gravityStepGroupSize = gravStep; m_integrationStepGroupSize = intStep;
 }
 
+const Profiler& Simulation::Instance::GetProfiler() const { return m_profiler; }
+bool Simulation::Instance::IsProfiling() const { return m_isProfiling; }
+void Simulation::Instance::SetIsProfiling(bool val) { m_isProfiling = val; }
+
+void Simulation::Instance::ResetProfiler() { m_profiler = Profiler(); }
+
 void Simulation::Instance::Progress(int steps) {
 	for (int i = 0; i < steps; ++i) {
+		if (m_isProfiling) { m_profiler.StartTimer(); }
 		switch (m_runMode) {
 		case RunMode::SEQUENTIAL:	PerformStepSequential(); break;
 		case RunMode::PARALLEL:		PerformStepParallel(); break;
 		}
+		if (m_isProfiling) { m_profiler.StopTimer(); }
 	}
 }
 
@@ -125,7 +134,7 @@ void Simulation::Instance::PerformStepParallel() {
 		});
 	});
 
-	//m_queue.wait();
+	m_queue.wait();
 
 
 	// Integration Step (update velocity and position based on accel)

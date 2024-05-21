@@ -1,7 +1,7 @@
 #include "GenerationWindow.h"
 
 GenerationWindow::GenerationWindow(std::unique_ptr<Simulation::Instance>* simulation)
-	: Window("World Generation", true, ImGuiWindowFlags_NoSavedSettings, ImVec2(380.f, 480.f)), p_simulationPtr(simulation) {
+	: Window("World Generation", true, ImGuiWindowFlags_NoSavedSettings, ImVec2(410.f, 480.f)), p_simulationPtr(simulation) {
 
 	m_currentGenerator = SOLAR_SYSTEM;
 
@@ -132,7 +132,6 @@ void GenerationWindow::Generate() {
 		auto hDist = Random::normal(0.f, m_solarSystemSizeH);
 		auto vDist = Random::normal(0.f, m_solarSystemSizeV);
 
-		/*
 		std::visit([&](auto massDist, auto speedDist) {
 			*p_simulationPtr = std::make_unique<Simulation::Instance>(
 				std::make_unique<Simulation::World>(
@@ -146,7 +145,6 @@ void GenerationWindow::Generate() {
 				(*p_simulationPtr)->StepLength()
 			);
 			}, m_massDist.GetVariant(), m_speedDist.GetVariant());
-			*/
 		
 	} break;
 	case ELLIPTICAL_GALAXY: {

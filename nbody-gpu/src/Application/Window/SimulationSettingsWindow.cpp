@@ -1,6 +1,6 @@
 #include "SimulationSettingsWindow.h"
 
-SimulationSettingsWindow::SimulationSettingsWindow(std::unique_ptr<Simulation::Instance>* simulation) : Window("Simulation Settings", false, 0, ImVec2(350.f, 130.f)), p_simulationPtr(simulation) {}
+SimulationSettingsWindow::SimulationSettingsWindow(std::unique_ptr<Simulation::Instance>* simulation) : Window("Simulation Settings", false, 0, ImVec2(350.f, 240.f)), p_simulationPtr(simulation) {}
 
 void SimulationSettingsWindow::DrawWindowContents() {
 	if (!p_simulationPtr) { return; }
@@ -37,5 +37,23 @@ void SimulationSettingsWindow::DrawWindowContents() {
 		if (shouldSetSteps) { simulation->SetGroupSize(gravStep, intStep); }
 
 		ImGui::Unindent();
+	}
+
+	bool isProfiling = simulation->IsProfiling();
+	if (ImGui::Checkbox("Profile", &isProfiling)) { simulation->SetIsProfiling(isProfiling); }
+
+	if (ImGui::Button("Reset Profiler")) { simulation->ResetProfiler(); }
+
+	if (ImGui::Button("Update Averages")) {
+		auto& profiler = simulation->GetProfiler();
+		m_timesCount = profiler.Count();
+		m_medianTime = profiler.Median();
+		m_meanTime = profiler.Mean();
+	}
+
+	if (m_timesCount > 0) {
+		ImGui::Text("Tick duration averaged over %i steps:", m_timesCount);
+		ImGui::Text("Median : %s", Duration(m_medianTime).AsFormattedString(TimeUnit::NANOSECOND, true).c_str());
+		ImGui::Text("Mean : %s", Duration(m_meanTime).AsFormattedString(TimeUnit::NANOSECOND, true).c_str());
 	}
 }

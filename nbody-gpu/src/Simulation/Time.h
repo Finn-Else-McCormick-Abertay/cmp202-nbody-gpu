@@ -3,6 +3,7 @@
 #include <string>
 #include <compare>
 #include <vector>
+#include <chrono>
 
 class TimeUnit
 {
@@ -46,6 +47,7 @@ class Duration
 {
 public:
 	Duration(float seconds);
+	Duration(std::chrono::nanoseconds);
 	Duration();
 
 	std::string AsFormattedString(TimeUnit minUnit = TimeUnit::SECOND, bool symbols = false) const;

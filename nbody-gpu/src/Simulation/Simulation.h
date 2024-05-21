@@ -4,6 +4,7 @@
 #include <Simulation/Time.h>
 #include <memory>
 #include <sycl/sycl.hpp>
+#include <Application/Profiler.h>
 
 namespace Simulation {
 
@@ -36,6 +37,12 @@ namespace Simulation {
 		std::pair<int, int> GetGroupSize() const;
 		void SetGroupSize(int gravityStep, int integrationStep);
 
+		const Profiler& GetProfiler() const;
+		bool IsProfiling() const;
+		void SetIsProfiling(bool);
+
+		void ResetProfiler();
+
 	private:
 		void PerformStepSequential();
 
@@ -51,6 +58,9 @@ namespace Simulation {
 		RunMode m_runMode = RunMode::SEQUENTIAL;
 		size_t m_gravityStepGroupSize = 10;
 		size_t m_integrationStepGroupSize = 10;
+
+		bool m_isProfiling = false;
+		Profiler m_profiler;
 
 		sycl::queue m_queue;
 		sycl::queue SyclSetup();

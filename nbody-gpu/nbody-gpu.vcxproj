@@ -26,6 +26,7 @@
     <ClCompile Include="src\Simulation\GravityInteraction.cpp" />
     <ClCompile Include="src\Rendering\DrawFunctions.cpp" />
     <ClCompile Include="src\Simulation\Integration.cpp" />
+    <ClCompile Include="src\Application\Profiler.cpp" />
     <ClCompile Include="src\Simulation\Simulation.cpp" />
     <ClCompile Include="src\Simulation\SimulationWorld.cpp" />
     <ClCompile Include="src\Simulation\Time.cpp" />
@@ -41,6 +42,7 @@
     <ClInclude Include="src\Application\Window\ViewSettingsWindow.h" />
     <ClInclude Include="src\Application\Window\Window.h" />
     <ClInclude Include="src\RandomDistributions.h" />
+    <ClInclude Include="src\Application\Profiler.h" />
     <ClInclude Include="src\Simulation\RandomGen.h" />
     <ClInclude Include="src\Simulation\Time.h" />
     <ClInclude Include="src\Application\WindowingApiWin32Impl.h" />

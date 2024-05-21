@@ -3,6 +3,7 @@
 #include <Application/Window/Window.h>
 #include <memory>
 #include <Simulation/Simulation.h>
+#include <chrono>
 
 struct SimulationSettingsWindow : public Window
 {
@@ -12,4 +13,7 @@ struct SimulationSettingsWindow : public Window
 
 protected:
 	virtual void DrawWindowContents() override;
+
+	int m_timesCount = 0;
+	std::chrono::nanoseconds m_medianTime, m_meanTime;
 };
