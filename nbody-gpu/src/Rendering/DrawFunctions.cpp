@@ -73,10 +73,44 @@ void Rendering::DrawGrid(DrawQueue& q, bool skipLinesOnAxis) {
 	}
 }
 
-void Rendering::DrawSimulation(const Simulation::World& world, DrawQueue& q, const std::set<int>& highlighted) {
+void Rendering::DrawSimulation(const Simulation::World& world, DrawQueue& q, const std::set<int>& highlighted, const SimulationDrawParams& params) {
 	for (int i = 0; i < world.size(); ++i) {
 		auto& body = world.at(i);
 
-		DRAW(q, Point, body.position, 5.f, (highlighted.contains(i) ? Color::YELLOW : Color::RED));
+		float3 scaledPosition = body.position * params.unitScale;
+
+		float size = 5.f;
+		if (params.massScaleFactor != 0.f) { size = body.mass * params.massScaleFactor; }
+
+		float speed = glm::length(body.velocity);
+
+		ImU32 color = Color::RED;
+		if (params.mapSpeedToColor) {
+			ImVec4 colorMin = (ImColor)params.colorMin;
+			ImVec4 colorMid = (ImColor)params.colorMid;
+			ImVec4 colorMax = (ImColor)params.colorMax;
+
+			if (speed < params.minThreshold) { color = (ImColor)colorMin; }
+			else if (speed > params.maxThreshold) { color = (ImColor)colorMax; }
+			else {
+				float midAmount = std::max((speed - params.minThreshold) / (params.midThreshold - params.minThreshold), 0.f);
+				float maxAmount = std::max((speed - params.midThreshold) / (params.maxThreshold - params.midThreshold), 0.f);
+				ImVec4 colorComp = ImVec4(
+					colorMin.x + colorMid.x * midAmount + colorMax.x * maxAmount,
+					colorMin.y + colorMid.y * midAmount + colorMax.y * maxAmount,
+					colorMin.z + colorMid.z * midAmount + colorMax.z * maxAmount,
+					colorMin.w + colorMid.w * midAmount + colorMax.w * maxAmount
+				);
+				color = (ImColor)colorComp;
+			}
+		}
+
+		DRAW(q, Point, scaledPosition, size, (highlighted.contains(i) ? Color::YELLOW : color));
+
+		if (params.drawVelocityArrows) {
+			float3 velocityDir = glm::normalize(body.velocity);
+			float arrowSize = 20.f;//params.velocityArrowScaleFactor * speed;
+			DRAW(q, Line, scaledPosition, scaledPosition + velocityDir * arrowSize, 2.f, color);
+		}
 	}
 }

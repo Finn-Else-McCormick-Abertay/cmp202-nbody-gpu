@@ -1,11 +1,17 @@
 #pragma once
 
-#include <Window/WindowingApi.h>
+#include <Application/WindowingApi.h>
 
-#include "Console.h"
+#include <Application/Console.h>
 #include <Simulation/Simulation.h>
 #include <Rendering/CameraController.h>
 #include <Rendering/DrawQueue.h>
+
+#include <Application/Window/TimeWindow.h>
+#include <Application/Window/InspectWindow.h>
+#include <Application/Window/ViewSettingsWindow.h>
+#include <Application/Window/GenerationWindow.h>
+#include <Application/Window/SimulationSettingsWindow.h>
 
 class Application
 {
@@ -30,12 +36,12 @@ private:
 
 	void DrawMenuBar();
 	void DrawMainWindow();
-	float DrawGenerateWindow(float vOffset);
-	float DrawTimeWindow(float vOffset);
-	float DrawInspectWindow(float vOffset);
-	float DrawDebugWindow(float vOffset);
 
-	static float DrawWindowGeneric(std::string name, ImGuiWindowFlags windowFlags, bool* p_show, Rendering::float2 offset, Rendering::float2 size, const std::function<void()>&);
+	SimulationSettingsWindow m_simulationSettingsWindow;
+	GenerationWindow m_generationWindow;
+	TimeWindow m_timeWindow;
+	InspectWindow m_inspectWindow;
+	ViewSettingsWindow m_viewSettingsWindow;
 
 	Console m_console;
 
@@ -51,10 +57,6 @@ private:
 	double m_cursorX = 0.0, m_cursorY = 0.0;
 
 	bool m_showAxes = true, m_showGrid = true;
-	bool m_showGenerateWindow = true;
-	bool m_showTimeWindow = true; int m_stepsPerFrame = 1; bool m_simPaused = true; float m_stepLengthNextSim = 1.f;
-	bool m_showInspectWindow = false; int m_inspectSelectedIndex = -1;
-	bool m_showDebugWindow = false;
 
 public:
 	static void __windowRefreshCallback(GLFWwindow*);

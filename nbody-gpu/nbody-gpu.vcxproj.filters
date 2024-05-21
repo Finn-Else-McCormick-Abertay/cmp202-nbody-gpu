@@ -18,10 +18,10 @@
     <ClCompile Include="src\nbody-gpu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window\Application.cpp">
+    <ClCompile Include="src\Application\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window\Console.cpp">
+    <ClCompile Include="src\Application\Console.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Simulation\GravityInteraction.cpp">
@@ -51,24 +51,45 @@
     <ClCompile Include="src\Simulation\Simulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window\WindowingApiWin32Impl.cpp">
+    <ClCompile Include="src\Application\WindowingApiWin32Impl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window\WindowingApi.cpp">
+    <ClCompile Include="src\Application\WindowingApi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Window\STBImpl.cpp">
+    <ClCompile Include="src\Application\STBImpl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Simulation\Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Application\Window\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Window\TimeWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Window\InspectWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Window\ViewSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Window\GenerationWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Window\Components\DistributionComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\Window\SimulationSettingsWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Window\Application.h">
+    <ClInclude Include="src\Application\Application.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Window\Console.h">
+    <ClInclude Include="src\Application\Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\DrawFunctions.h">
@@ -110,16 +131,40 @@
     <ClInclude Include="src\Simulation\Simulation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Window\WindowingApi.h">
+    <ClInclude Include="src\Application\WindowingApi.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Window\WindowingApiWin32Impl.h">
+    <ClInclude Include="src\Application\WindowingApiWin32Impl.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Simulation\Time.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Simulation\RandomGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\TimeWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\InspectWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\ViewSettingsWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\GenerationWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\Components\DistributionComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RandomDistributions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Window\SimulationSettingsWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

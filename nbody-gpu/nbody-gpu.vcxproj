@@ -11,6 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Application\Window\Components\DistributionComponent.cpp" />
+    <ClCompile Include="src\Application\Window\GenerationWindow.cpp" />
+    <ClCompile Include="src\Application\Window\InspectWindow.cpp" />
+    <ClCompile Include="src\Application\Window\SimulationSettingsWindow.cpp" />
+    <ClCompile Include="src\Application\Window\TimeWindow.cpp" />
+    <ClCompile Include="src\Application\Window\ViewSettingsWindow.cpp" />
+    <ClCompile Include="src\Application\Window\Window.cpp" />
     <ClCompile Include="src\nbody-gpu.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\CameraController.cpp" />
@@ -22,14 +29,22 @@
     <ClCompile Include="src\Simulation\Simulation.cpp" />
     <ClCompile Include="src\Simulation\SimulationWorld.cpp" />
     <ClCompile Include="src\Simulation\Time.cpp" />
-    <ClCompile Include="src\Window\Console.cpp" />
-    <ClCompile Include="src\Window\Application.cpp" />
-    <ClCompile Include="src\Window\STBImpl.cpp" />
-    <ClCompile Include="src\Window\WindowingApiWin32Impl.cpp" />
+    <ClCompile Include="src\Application\Console.cpp" />
+    <ClCompile Include="src\Application\Application.cpp" />
+    <ClCompile Include="src\Application\STBImpl.cpp" />
+    <ClCompile Include="src\Application\WindowingApiWin32Impl.cpp" />
+    <ClInclude Include="src\Application\Window\Components\DistributionComponent.h" />
+    <ClInclude Include="src\Application\Window\GenerationWindow.h" />
+    <ClInclude Include="src\Application\Window\InspectWindow.h" />
+    <ClInclude Include="src\Application\Window\SimulationSettingsWindow.h" />
+    <ClInclude Include="src\Application\Window\TimeWindow.h" />
+    <ClInclude Include="src\Application\Window\ViewSettingsWindow.h" />
+    <ClInclude Include="src\Application\Window\Window.h" />
+    <ClInclude Include="src\RandomDistributions.h" />
     <ClInclude Include="src\Simulation\RandomGen.h" />
     <ClInclude Include="src\Simulation\Time.h" />
-    <ClInclude Include="src\Window\WindowingApiWin32Impl.h" />
-    <ClCompile Include="src\Window\WindowingApi.cpp" />
+    <ClInclude Include="src\Application\WindowingApiWin32Impl.h" />
+    <ClCompile Include="src\Application\WindowingApi.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\MathsTypes.h" />
@@ -45,9 +60,9 @@
     <ClInclude Include="src\Rendering\DrawFunctions.h" />
     <ClInclude Include="src\Simulation\Simulation.h" />
     <ClInclude Include="src\Simulation\SimulationWorld.h" />
-    <ClInclude Include="src\Window\Console.h" />
-    <ClInclude Include="src\Window\Application.h" />
-    <ClInclude Include="src\Window\WindowingApi.h" />
+    <ClInclude Include="src\Application\Console.h" />
+    <ClInclude Include="src\Application\Application.h" />
+    <ClInclude Include="src\Application\WindowingApi.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1aec6315-2f89-4145-b180-94a43e2eb6ea}</ProjectGuid>

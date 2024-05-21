@@ -24,6 +24,8 @@ namespace Rendering {
 		void Rotate(const float2& mouseMove);
 		void Scale(float mouseWheel);
 
+		float GetScale() const;
+
 		void SetViewport(ImVec2);
 
 		void DisplayInfoChildWindow();

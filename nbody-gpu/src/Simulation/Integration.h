@@ -3,6 +3,8 @@
 #include <Simulation/Body.h>
 #include <Simulation/Time.h>
 
+#include <sycl/sycl.hpp>
+
 namespace Simulation {
-	Body LeapfrogIntegrate(Body body, float3 acceleration, Duration timeStep);
+	Body SYCL_EXTERNAL LeapfrogIntegrate(Body body, float3 acceleration, float timeStep);
 }

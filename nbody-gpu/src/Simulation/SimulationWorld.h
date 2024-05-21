@@ -4,6 +4,7 @@
 #include <vector>
 #include <Simulation/RandomGen.h>
 #include <random>
+#include <sycl/sycl.hpp>
 
 namespace Simulation {
 
@@ -13,13 +14,11 @@ namespace Simulation {
 		World(World&) = default;
 		World(const World&) = default;
 
-		static World RandomWorld(size_t size, const Random::GeneratorCallable& BodyGen, int seed = -1) {
-			World world = World(size);
-			unsigned int generationSeed; if (seed > 0) { generationSeed = seed; } else { std::random_device randomDevice; generationSeed = randomDevice(); }
-			Random::RandomEngine gen(generationSeed);
-			for (size_t i = 0; i < size; ++i) { world.m_bodies.emplace_back(BodyGen(gen)); }
-			return world;
-		}
+		static World RandomWorld(size_t size, const Random::GeneratorCallable& BodyGen, int seed = -1);
+
+		static World CentralStar(float mass);
+
+		static World Combine(const World&, const World&);
 
 		Body& operator[](size_t index);
 		const Body& at(size_t index) const;
@@ -30,6 +29,8 @@ namespace Simulation {
 
 		std::vector<Body>::const_iterator cbegin() const;
 		std::vector<Body>::const_iterator cend() const;
+
+		sycl::buffer<Body, 1> buffer();
 
 	private:
 		std::vector<Body> m_bodies;

@@ -1,23 +1,11 @@
 #include <sycl/sycl.hpp>
 #include <iostream>
 
-#include <Window/Application.h>
+#include <Application/Application.h>
 
 #include <Simulation/Simulation.h>
 
 using namespace sycl;
-
-// Create an exception handler for asynchronous SYCL exceptions
-static auto exception_handler = [](sycl::exception_list e_list) {
-	for (std::exception_ptr const &e : e_list) {
-		try {
-			std::rethrow_exception(e);
-		}
-		catch (std::exception const &e) {
-			std::terminate();
-		}
-	}
-};
 
 int main(int argc, char* argv[]) {
 	/*
@@ -36,21 +24,24 @@ int main(int argc, char* argv[]) {
 
 	Application::Init();
 	{
-		std::normal_distribution<float>::param_type massParams{ 5.f, 1.f };
-		std::normal_distribution<float>::param_type hParams{ 0.f, 50.f };
-		std::normal_distribution<float>::param_type vParams{ 0.f, 5.f };
-		std::normal_distribution<float>::param_type speedParams{ 0.f, 0.0001f };
+		float starMass = 10'000.f;
 
-		auto generator = Random::PlanetaryDiskGenerator<
-			std::normal_distribution<float>,
-			std::normal_distribution<float>,
-			std::normal_distribution<float>,
-			std::normal_distribution<float>
-		> (massParams, hParams, vParams, speedParams);
+		float diskSize = 100'000.f;
+
+		Random::normal::param_type massParams{ 1000.f, 600.f };
+		Random::normal::param_type hParams{ 0.f, diskSize };
+		Random::normal::param_type vParams{ 0.f, 5.f };
+		Random::normal::param_type speedParams{ 10.f, 0.02f };
+
+		auto generator = Random::DiskGenerator(massParams, hParams, hParams, vParams, speedParams);
 
 		Application::SetSimulation(
 			std::make_unique<Simulation::Instance>(
-				std::make_unique<Simulation::World>(Simulation::World::RandomWorld(35, generator)),
+				std::make_unique<Simulation::World>(
+					Simulation::World::Combine(
+						Simulation::World::CentralStar(starMass),
+						Simulation::World::RandomWorld(500, generator)
+					)),
 				Duration(1.f)
 			)
 		);

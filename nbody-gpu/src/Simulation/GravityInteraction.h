@@ -3,6 +3,8 @@
 #include <MathsTypes.h>
 #include <Simulation/Body.h>
 
+#include <sycl/sycl.hpp>
+
 namespace Simulation {
 
 	/// <summary>Gravitational interaction between two newtonian point masses
@@ -11,7 +13,7 @@ namespace Simulation {
 	/// <param name="focusBody">i</param>
 	/// <param name="interactBody">j</param>
 	/// <returns>Acceleration on body i</returns>
-	float3 BodyBodyInteractionNewtonian(GravityBody focusBody, GravityBody interactBody);
+	float3 SYCL_EXTERNAL BodyBodyInteractionNewtonian(GravityBody focusBody, GravityBody interactBody);
 
 
 	/// <summary>Gravitational interaction between two plummer point masses
@@ -21,6 +23,6 @@ namespace Simulation {
 	/// <param name="interactBody">j</param>
 	/// <param name="softening">ε</param>
 	/// <returns>Acceleration on body i</returns>
-	float3 BodyBodyInteractionPlummer(GravityBody focusBody, GravityBody interactBody, float softening);
+	float3 SYCL_EXTERNAL BodyBodyInteractionPlummer(GravityBody focusBody, GravityBody interactBody, float softening);
 
 }

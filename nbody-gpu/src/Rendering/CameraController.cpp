@@ -89,7 +89,7 @@ namespace Rendering {
 
 
 	void CameraController::Pan(const float2& mouseMove) {
-		float3 moveCamSpace = float3(1.f * mouseMove, 0.f) * m_panSpeed;// *(m_currentType == ORTHOGRAPHIC ? 1.f : ORTHO_TO_PERSPECTIVE_SCALE_FACTOR);
+		float3 moveCamSpace = float3(1.f * mouseMove, 0.f) * m_panSpeed / m_scale;
 		float3 moveWorldSpace = glm::inverse(m_camera->RotationQuaternion()) * glm::vec4(moveCamSpace, 1.f);
 		m_camera->Move(moveWorldSpace);
 	}
@@ -103,6 +103,8 @@ namespace Rendering {
 		m_scale *= 1 + mouseWheel * m_scaleSpeed;
 		m_camera->SetScale(m_scale * (m_currentType == ORTHOGRAPHIC ? 1.f : ORTHO_TO_PERSPECTIVE_SCALE_FACTOR) * m_scaleFactor);
 	}
+
+	float CameraController::GetScale() const { return m_scale; }
 
 	void CameraController::SetViewport(ImVec2 viewport) {
 		m_viewport = viewport;

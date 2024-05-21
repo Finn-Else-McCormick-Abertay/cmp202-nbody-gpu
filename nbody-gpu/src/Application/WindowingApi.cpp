@@ -9,7 +9,7 @@
 #include <stb_image.h>
 
 #ifdef PLATFORM_WIN32
-#include <Window/WindowingApiWin32Impl.h>
+#include <Application/WindowingApiWin32Impl.h>
 #define MAKE_WINDOWING_API() std::unique_ptr<WindowingApi>(new WindowingApiWin32Impl);
 #endif
 
