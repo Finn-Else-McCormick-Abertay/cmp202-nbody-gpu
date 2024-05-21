@@ -16,4 +16,6 @@ protected:
 
 	int m_timesCount = 0;
 	std::chrono::nanoseconds m_medianTime, m_meanTime;
+
+	std::string m_fileName;
 };

@@ -1,5 +1,10 @@
 #include "SimulationSettingsWindow.h"
 
+#include <nlohmann/json.hpp>
+#include <fstream>
+#include <imgui_stdlib.h>
+#include <filesystem>
+
 SimulationSettingsWindow::SimulationSettingsWindow(std::unique_ptr<Simulation::Instance>* simulation) : Window("Simulation Settings", false, 0, ImVec2(350.f, 240.f)), p_simulationPtr(simulation) {}
 
 void SimulationSettingsWindow::DrawWindowContents() {
@@ -56,4 +61,36 @@ void SimulationSettingsWindow::DrawWindowContents() {
 		ImGui::Text("Median : %s", Duration(m_medianTime).AsFormattedString(TimeUnit::NANOSECOND, true).c_str());
 		ImGui::Text("Mean : %s", Duration(m_meanTime).AsFormattedString(TimeUnit::NANOSECOND, true).c_str());
 	}
+
+	if (ImGui::Button("Output Averages to File")) {
+		auto& profiler = simulation->GetProfiler();
+
+		nlohmann::json j;
+
+#ifdef _DEBUG
+		j["mode"] = "debug";
+#endif
+#ifdef NDEBUG
+		j["mode"] = "release";
+#endif
+
+		nlohmann::json timesJson;
+
+		for (auto& time : profiler.Times()) {
+			timesJson.push_back(time.count());
+		}
+
+		j["median"] = profiler.Median().count();
+		j["mean"] = profiler.Mean().count();
+		j["times"] = timesJson;
+
+		std::filesystem::path path = std::filesystem::path(m_fileName).replace_extension("json");
+
+		std::ofstream file(path);
+		if (file.is_open()) {
+			file << j;
+		}
+	}
+
+	ImGui::InputText("File Name", &m_fileName);
 }
